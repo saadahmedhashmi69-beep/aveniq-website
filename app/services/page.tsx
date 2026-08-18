@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Section } from "@/components/ui/Section";
@@ -9,11 +9,12 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { ServiceCategories } from "@/components/services/ServiceCategories";
 import { serviceCategories } from "@/lib/data/services";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Services",
   description:
     "What Aveniq builds: custom business software, websites, CRMs, dashboards, automation, and applications — engineered around how your business actually works.",
-};
+  path: "/services",
+});
 
 export default function ServicesPage() {
   return (

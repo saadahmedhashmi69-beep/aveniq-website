@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { Text } from "@/components/ui/Text";
@@ -7,11 +7,12 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { CaseStudyCard } from "@/components/work/CaseStudyCard";
 import { caseStudies } from "@/lib/data/case-studies";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Work",
   description:
     "Real projects Aveniq has built — starting with Siraj Din Electronics, a digital commerce and installment-management platform.",
-};
+  path: "/work",
+});
 
 export default function WorkPage() {
   return (

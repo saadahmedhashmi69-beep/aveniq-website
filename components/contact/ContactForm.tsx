@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
@@ -10,12 +10,14 @@ import { Select } from "@/components/ui/Select";
 import { Text } from "@/components/ui/Text";
 import { Textarea } from "@/components/ui/Textarea";
 import { estimatorSteps } from "@/lib/data/estimator";
+import { CONTACT_MAX_LENGTHS, validateContactPayload, type ContactFieldName } from "@/lib/contact-validation";
+import { ESTIMATOR_HANDOFF_KEY } from "@/lib/estimator-handoff";
 
 const projectTypeOptions = estimatorSteps.find((step) => step.id === "projectType")?.options ?? [];
 const budgetOptions = estimatorSteps.find((step) => step.id === "budget")?.options ?? [];
 const timelineOptions = estimatorSteps.find((step) => step.id === "timeline")?.options ?? [];
 
-const initialValues = {
+const initialValues: Record<ContactFieldName, string> = {
   name: "",
   company: "",
   email: "",
@@ -30,9 +32,7 @@ const initialValues = {
   additionalInfo: "",
 };
 
-type ContactValues = typeof initialValues;
-
-const fieldLabels: Record<keyof ContactValues, string> = {
+const fieldLabels: Record<ContactFieldName, string> = {
   name: "Name",
   company: "Company",
   email: "Email",
@@ -48,71 +48,90 @@ const fieldLabels: Record<keyof ContactValues, string> = {
 };
 
 export function ContactForm() {
-  const [values, setValues] = useState<ContactValues>(initialValues);
-  const [errors, setErrors] = useState<Partial<Record<keyof ContactValues, string>>>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [values, setValues] = useState(initialValues);
+  const [errors, setErrors] = useState<Partial<Record<ContactFieldName, string>>>({});
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [formError, setFormError] = useState<string | null>(null);
+  const renderedAt = useRef(0);
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
-  function update<K extends keyof ContactValues>(key: K, value: ContactValues[K]) {
+  useEffect(() => {
+    renderedAt.current = Date.now();
+
+    // One-time hydration of state from a browser-only API (sessionStorage)
+    // that doesn't exist during server rendering — there's no way to do
+    // this during render itself, so this is the sanctioned exception to
+    // the "no setState in effects" rule.
+    const raw = window.sessionStorage.getItem(ESTIMATOR_HANDOFF_KEY);
+    if (!raw) return;
+    try {
+      const handoff = JSON.parse(raw) as Partial<Record<ContactFieldName, string>>;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setValues((prev) => ({ ...prev, ...handoff }));
+    } catch {
+      // ignore malformed handoff data
+    } finally {
+      window.sessionStorage.removeItem(ESTIMATOR_HANDOFF_KEY);
+    }
+  }, []);
+
+  function update<K extends ContactFieldName>(key: K, value: string) {
     setValues((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (status === "submitting") return;
 
-    const nextErrors: Partial<Record<keyof ContactValues, string>> = {};
-    if (!values.name.trim()) nextErrors.name = "Please enter your name.";
-    if (!values.company.trim()) nextErrors.company = "Please enter your company.";
-    if (!values.email.trim()) {
-      nextErrors.email = "Please enter your email.";
-    } else if (!/^\S+@\S+\.\S+$/.test(values.email)) {
-      nextErrors.email = "Please enter a valid email address.";
-    }
+    const { valid, errors: fieldErrors } = validateContactPayload(values);
+    setErrors(fieldErrors);
+    if (!valid) return;
 
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length === 0) {
-      setSubmitted(true);
+    setStatus("submitting");
+    setFormError(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...values,
+          website: honeypotRef.current?.value ?? "",
+          renderedAt: renderedAt.current,
+        }),
+      });
+
+      const result = (await response.json()) as {
+        ok: boolean;
+        error?: string;
+        errors?: Partial<Record<ContactFieldName, string>>;
+      };
+
+      if (result.ok) {
+        setStatus("success");
+        return;
+      }
+
+      if (result.errors) setErrors(result.errors);
+      setFormError(result.error ?? "Something went wrong. Please try again.");
+      setStatus("error");
+    } catch {
+      setFormError("Something went wrong. Please check your connection and try again.");
+      setStatus("error");
     }
   }
 
-  if (submitted) {
-    const summaryFields = (Object.keys(values) as (keyof ContactValues)[]).filter(
-      (key) => values[key].trim().length > 0,
-    );
-
+  if (status === "success") {
     return (
       <div className="rounded-xl border border-edge bg-surface p-8 md:p-10" role="status">
-        <Badge>Inquiry prepared</Badge>
+        <Badge>Inquiry sent</Badge>
         <Heading as="h2" size="h3" className="mt-4">
-          Thanks for sharing this.
+          Thanks — we&apos;ve got it.
         </Heading>
         <Text size="base" muted className="mt-4 max-w-xl">
-          This form isn&apos;t connected to a live inbox yet, so nothing has been sent
-          automatically — submission handling is part of a later engineering phase. Here&apos;s a
-          summary of what you shared, so you can save or copy it in the meantime.
+          Your inquiry has been sent. We&apos;ll get back to you at the email address you
+          provided.
         </Text>
-
-        <dl className="mt-6 flex flex-col gap-3 border-t border-edge pt-6">
-          {summaryFields.map((key) => (
-            <div key={key} className="grid grid-cols-1 gap-1 sm:grid-cols-3 sm:gap-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-                {fieldLabels[key]}
-              </dt>
-              <dd className="text-sm text-ink sm:col-span-2">{values[key]}</dd>
-            </div>
-          ))}
-        </dl>
-
-        <Button
-          type="button"
-          variant="ghost"
-          className="mt-6"
-          onClick={() => {
-            setValues(initialValues);
-            setSubmitted(false);
-          }}
-        >
-          Edit inquiry
-        </Button>
       </div>
     );
   }
@@ -120,9 +139,26 @@ export function ContactForm() {
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
       <Text size="sm" muted>
-        This is a project inquiry form. It isn&apos;t connected to a live inbox yet — submission
-        handling is part of a later engineering phase.
+        Tell us about your project — the more context you share, the more useful our first
+        response can be.
       </Text>
+
+      {/* Honeypot — hidden from real visitors; bots that autofill it get silently dropped. */}
+      <input
+        ref={honeypotRef}
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute left-[-9999px] h-0 w-0 opacity-0"
+      />
+
+      {formError ? (
+        <p role="alert" className="rounded-md border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+          {formError}
+        </p>
+      ) : null}
 
       <div>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-faint">
@@ -135,6 +171,7 @@ export function ContactForm() {
               name="name"
               type="text"
               required
+              maxLength={CONTACT_MAX_LENGTHS.name}
               value={values.name}
               onChange={(e) => update("name", e.target.value)}
               aria-invalid={Boolean(errors.name)}
@@ -146,6 +183,7 @@ export function ContactForm() {
               name="company"
               type="text"
               required
+              maxLength={CONTACT_MAX_LENGTHS.company}
               value={values.company}
               onChange={(e) => update("company", e.target.value)}
               aria-invalid={Boolean(errors.company)}
@@ -157,6 +195,7 @@ export function ContactForm() {
               name="email"
               type="email"
               required
+              maxLength={CONTACT_MAX_LENGTHS.email}
               value={values.email}
               onChange={(e) => update("email", e.target.value)}
               aria-invalid={Boolean(errors.email)}
@@ -167,6 +206,7 @@ export function ContactForm() {
               id="phone"
               name="phone"
               type="tel"
+              maxLength={CONTACT_MAX_LENGTHS.phone}
               value={values.phone}
               onChange={(e) => update("phone", e.target.value)}
             />
@@ -176,6 +216,7 @@ export function ContactForm() {
               id="country"
               name="country"
               type="text"
+              maxLength={CONTACT_MAX_LENGTHS.country}
               value={values.country}
               onChange={(e) => update("country", e.target.value)}
             />
@@ -185,6 +226,7 @@ export function ContactForm() {
               id="businessType"
               name="businessType"
               type="text"
+              maxLength={CONTACT_MAX_LENGTHS.businessType}
               value={values.businessType}
               onChange={(e) => update("businessType", e.target.value)}
             />
@@ -217,6 +259,7 @@ export function ContactForm() {
               id="existingSystem"
               name="existingSystem"
               type="text"
+              maxLength={CONTACT_MAX_LENGTHS.existingSystem}
               placeholder="e.g. spreadsheets, a legacy tool, nothing yet"
               value={values.existingSystem}
               onChange={(e) => update("existingSystem", e.target.value)}
@@ -255,18 +298,20 @@ export function ContactForm() {
         </div>
 
         <div className="mt-6 flex flex-col gap-6">
-          <FormField label={fieldLabels.problem} htmlFor="problem">
+          <FormField label={fieldLabels.problem} htmlFor="problem" error={errors.problem}>
             <Textarea
               id="problem"
               name="problem"
+              maxLength={CONTACT_MAX_LENGTHS.problem}
               value={values.problem}
               onChange={(e) => update("problem", e.target.value)}
             />
           </FormField>
-          <FormField label={fieldLabels.additionalInfo} htmlFor="additionalInfo">
+          <FormField label={fieldLabels.additionalInfo} htmlFor="additionalInfo" error={errors.additionalInfo}>
             <Textarea
               id="additionalInfo"
               name="additionalInfo"
+              maxLength={CONTACT_MAX_LENGTHS.additionalInfo}
               value={values.additionalInfo}
               onChange={(e) => update("additionalInfo", e.target.value)}
             />
@@ -275,8 +320,8 @@ export function ContactForm() {
       </div>
 
       <div>
-        <Button type="submit" variant="primary">
-          Send inquiry
+        <Button type="submit" variant="primary" disabled={status === "submitting"}>
+          {status === "submitting" ? "Sending…" : "Send inquiry"}
         </Button>
       </div>
     </form>

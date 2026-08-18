@@ -9,6 +9,7 @@ import { SelectableCard } from "@/components/ui/SelectableCard";
 import { Text } from "@/components/ui/Text";
 import { Textarea } from "@/components/ui/Textarea";
 import { estimatorSteps } from "@/lib/data/estimator";
+import { ESTIMATOR_HANDOFF_KEY, buildContactHandoff } from "@/lib/estimator-handoff";
 import type { EstimatorAnswers } from "@/types";
 
 function EstimatorProfile({
@@ -47,7 +48,16 @@ function EstimatorProfile({
       </Text>
 
       <div className="mt-8 flex flex-wrap gap-4">
-        <Button href="/contact" variant="primary">
+        <Button
+          href="/contact"
+          variant="primary"
+          onClick={() => {
+            window.sessionStorage.setItem(
+              ESTIMATOR_HANDOFF_KEY,
+              JSON.stringify(buildContactHandoff(answers)),
+            );
+          }}
+        >
           Continue to Contact
         </Button>
         <Button type="button" variant="ghost" onClick={onReset}>

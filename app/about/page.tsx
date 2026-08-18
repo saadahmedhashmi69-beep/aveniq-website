@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { Badge } from "@/components/ui/Badge";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
@@ -8,11 +8,12 @@ import { PageHero } from "@/components/sections/PageHero";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { ValuesGrid } from "@/components/about/ValuesGrid";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "About",
   description:
     "How Aveniq thinks about software: understand the business before engineering the system.",
-};
+  path: "/about",
+});
 
 const questions = [
   "How does the business actually work, day to day?",

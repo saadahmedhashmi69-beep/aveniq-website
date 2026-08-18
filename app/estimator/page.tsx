@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/sections/PageHero";
 import { EstimatorFlow } from "@/components/estimator/EstimatorFlow";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Project Estimator",
   description:
     "Describe your project in a few steps and get a preliminary project profile — not an exact quote.",
-};
+  path: "/estimator",
+});
 
 export default function EstimatorPage() {
   return (
