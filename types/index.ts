@@ -40,3 +40,29 @@ export interface CaseStudy {
   outcomes: string[];
   screenshotsAvailable: boolean;
 }
+
+/** One layer in the Interactive Architecture Demo. Purely illustrative. */
+export interface ArchitectureLayer {
+  id: string;
+  title: string;
+  description: string;
+}
+
+/** Fictional CRM demo record — never real customer data. */
+export type CrmStage = "New" | "Qualified" | "Proposal" | "Won";
+
+export interface CrmTask {
+  id: string;
+  label: string;
+  done: boolean;
+}
+
+export interface CrmLead {
+  id: string;
+  name: string;
+  company: string;
+  note: string;
+  exampleValue: number;
+  stage: CrmStage;
+  tasks: CrmTask[];
+}
