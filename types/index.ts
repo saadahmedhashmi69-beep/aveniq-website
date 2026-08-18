@@ -66,3 +66,30 @@ export interface CrmLead {
   stage: CrmStage;
   tasks: CrmTask[];
 }
+
+export interface ServiceCategory {
+  title: string;
+  problem: string;
+  whatWeBuild: string[];
+  whyItMatters: string;
+  featured?: boolean;
+}
+
+export interface Value {
+  title: string;
+  description: string;
+}
+
+export type EstimatorStepType = "single" | "multi" | "text" | "textarea";
+
+export interface EstimatorStep {
+  id: string;
+  question: string;
+  type: EstimatorStepType;
+  options?: string[];
+  required?: boolean;
+  placeholder?: string;
+}
+
+export type EstimatorAnswer = string | string[];
+export type EstimatorAnswers = Record<string, EstimatorAnswer>;
