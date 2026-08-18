@@ -116,7 +116,9 @@ Anything beyond these four (team size, years in business, number of clients, awa
 
 ## D. Sitemap
 
-**Phasing note:** the pages below are **Phase 4 (Secondary Pages)** deliverables — dedicated routes built after the Phase 2 homepage and Phase 3 interactive experiences. Home (`/`) ships in Phase 2. `/work/siraj-din-electronics` and `/process` cover the same underlying content that already exists as Phase 2 homepage sections (see the roadmap note above) — Phase 4 gives that content its own page and URL; it doesn't introduce new content. `/estimator` and `/contact` have no homepage equivalent — they're new in Phase 4.
+**Phasing note:** the pages below are **Phase 4 (Secondary Pages)** deliverables — dedicated routes built after the Phase 2 homepage and Phase 3 interactive experiences. Home (`/`) ships in Phase 2. The case-study detail page and `/process` cover the same underlying content that already exists as Phase 2 homepage sections (see the roadmap note above) — Phase 4 gives that content its own page and URL; it doesn't introduce new content. `/estimator` and `/contact` have no homepage equivalent — they're new in Phase 4.
+
+**IA naming note:** the page type is generically **"Case Study" / "Case Studies"** — `/work` is a Case Study index and `/work/[slug]` is the generic Case Study detail template. Siraj Din Electronics is the first and currently only published case study, not the permanent name of the page category; the template is built to hold additional real case studies later without renaming anything.
 
 **Recommended pages (full sitemap, once Phase 4 is complete):**
 
@@ -125,7 +127,7 @@ Anything beyond these four (team size, years in business, number of clients, awa
 | `/` | Home | Yes | Core narrative, entry point for all traffic |
 | `/services` | Services | Yes | Organized by business problem, not tech stack — see below |
 | `/work` | Work (case studies index) | Yes | Proof stage; scales as more cases are added |
-| `/work/[slug]` | Case study detail | Yes | e.g. `/work/siraj-din-electronics` |
+| `/work/[slug]` | Case Study detail (generic template) | Yes | First instance: `/work/siraj-din-electronics` |
 | `/process` | Process | Yes | Explains engagement + folds in the security/engineering-discipline content |
 | `/about` | About | Yes, lightweight | Positioning/philosophy only — no fabricated history/team |
 | `/estimator` | Project discovery tool | Yes | Primary qualification path, distinct from a generic contact form |
@@ -167,7 +169,7 @@ Anything beyond these four (team size, years in business, number of clients, awa
 - Conversion role: proof stage.
 - SEO role: supports "who has actually built this" query intent; internal links into detail pages.
 
-**Case study detail (`/work/[slug]`)**
+**Case Study detail — generic template (`/work/[slug]`)**
 - Purpose: demonstrate real, specific capability.
 - Target visitor: visitor who wants evidence before talking to sales.
 - Primary CTA: "Start a Project" (contextual: "Have a similar problem?").
@@ -403,7 +405,7 @@ Evaluated against one test: does it demonstrate real capability, or is it decora
 
 ## I. Case Study Architecture
 
-**Phasing note:** this is the full structure for the dedicated case-study page (`/work/siraj-din-electronics`, Phase 4). The Phase 2 homepage spotlight uses a condensed version of the same underlying data (client, industry, project type, summary, functionality, outcomes) without the deep dive into the installment calculator, the admin-system walkthrough, or a screenshot gallery — those stay page-level depth for Phase 4.
+**Phasing note:** this is the full structure for the generic Case Study detail template (`/work/[slug]`, Phase 4), first published at `/work/siraj-din-electronics`. The Phase 2 homepage spotlight uses a condensed version of the same underlying data (client, industry, project type, summary, functionality, outcomes) without the deep dive into the installment calculator, the admin-system walkthrough, or a screenshot gallery — those stay page-level depth for Phase 4.
 
 **Card (index page):** project name, one-line problem statement, 2–3 capability tags (e.g., "Product Catalogue," "Installment Engine," "Admin Panel"), thumbnail, "View case study" link.
 
@@ -524,7 +526,7 @@ This table mirrors the authoritative roadmap at the top of this document.
 | **1 — Architecture & Design System (this document)** | Brand direction, colors, typography, spacing, components, navigation, page architecture, responsive rules | None | Approving assumptions that later prove wrong | Your sign-off (section Q) |
 | **2 — Homepage** | Hero, problem framing, capabilities, proof/Siraj Din case study, process, technology, security, and final CTA as homepage sections; Navbar/Footer/Container/Section/Button/Card/Heading/Text primitives; `@theme` tokens in `globals.css` | Phase 1 approval | Token/contrast mistakes baked into every component; embedding case-study content without real screenshots | Lint + typecheck + build clean; manual contrast check; content reviewed against Truth & Credibility rules (N) |
 | **3 — Interactive Experiences (complete)** | Built: the architecture-diagram visualization and the CRM demo, both accessible and reduced-motion safe. Rejected: dashboard demo and workflow builder (see H for reasoning) | Phase 2 primitives | Scope creep toward a "cool but pointless" build | Keyboard/screen-reader test, `prefers-reduced-motion` test, mobile fallback check |
-| **4 — Secondary Pages** | `/services`, `/work`, `/work/siraj-din-electronics` (full case-study depth, see I), `/about`, `/contact`, `/estimator` | Phase 2 primitives; real case-study assets/screenshots supplied; legal-entity details for any future legal pages | Missing real screenshots/tech-stack confirmation stalls the case-study page; building auth/DB prematurely if lead handling isn't scoped correctly | Content reviewed against Truth & Credibility rules (N); form accessibility test |
+| **4 — Secondary Pages** | `/services`, `/work` (Case Study index), `/work/[slug]` generic Case Study template — first published as `/work/siraj-din-electronics` (full depth, see I) — `/about`, `/contact`, `/estimator` | Phase 2 primitives; real case-study assets/screenshots supplied; legal-entity details for any future legal pages | Missing real screenshots/tech-stack confirmation stalls the case-study page; building auth/DB prematurely if lead handling isn't scoped correctly | Content reviewed against Truth & Credibility rules (N); form accessibility test |
 | **5 — Engineering** | Forms, validation, SEO (sitemap/robots/structured data), performance pass, accessibility hardening, security review | All Phase 4 content pages exist | Retrofitting SEO/a11y late is more expensive than building it in | Lighthouse "Good" on mobile, axe zero critical issues |
 | **6 — Final QA** | Desktop/mobile/browser testing, Lighthouse/Core Web Vitals, build/TypeScript/ESLint checks, broken-link check, console-error check, conversion review, truthfulness audit, production deploy | All prior phases | Shipping an unverified claim | Manual content audit + smoke test on production |
 
