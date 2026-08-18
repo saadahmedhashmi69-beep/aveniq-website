@@ -1,26 +1,107 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens — implements the palette and scale defined in
+ * docs/phase-1-architecture.md (section F). Token names here are kept
+ * short to avoid Tailwind utility-name stutter (e.g. `bg-surface` instead
+ * of `bg-bg-surface`); the mapping back to the architecture doc's naming
+ * is noted alongside each token.
+ */
+@theme {
+  /* bg-base */
+  --color-canvas: #08080a;
+  /* bg-surface */
+  --color-surface: #121318;
+  /* bg-surface-hover */
+  --color-surface-hover: #17181f;
+  /* border-subtle */
+  --color-edge: #24252c;
+  /* border-strong — lightened from the doc's #33343D (1.6:1 on canvas) to
+     clear the 3:1 WCAG non-text contrast minimum for UI component
+     boundaries such as the secondary button border. */
+  --color-edge-strong: #63656f;
+  /* text-primary */
+  --color-ink: #e2e8f0;
+  /* text-secondary */
+  --color-ink-muted: #94a3b8;
+  /* text-muted — lightened from the doc's #64748B (4.2:1 on canvas) to
+     clear the 4.5:1 WCAG AA minimum for normal-size text. */
+  --color-ink-faint: #7c8ca6;
+
+  /* primary interactive accent — cyan */
+  --color-accent: #00e5ff;
+  --color-accent-hover: #00c4db;
+  /* semantic success only — not a decorative brand color */
+  --color-success: #00ff88;
+  --color-warning: #f5a623;
+  --color-error: #f87171;
+  /* reserved tertiary accent — data/diagram variety only */
+  --color-data: #a855f7;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 24px 48px -8px rgba(0, 0, 0, 0.6);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  scroll-behavior: smooth;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Fluid type scale — clamp() is a deliberate exception to the utility
+ * scale: section F specifies responsive headline sizes that Tailwind's
+ * fixed text-* scale can't express on its own. */
+@layer utilities {
+  .text-display {
+    font-size: clamp(2.5rem, 1.9rem + 3vw, 4.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .text-h1 {
+    font-size: clamp(2.25rem, 1.8rem + 2vw, 3.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .text-h2 {
+    font-size: clamp(1.875rem, 1.6rem + 1.2vw, 2.75rem);
+    line-height: 1.15;
+  }
+  .text-h3 {
+    font-size: clamp(1.5rem, 1.35rem + 0.6vw, 1.875rem);
+    line-height: 1.25;
+  }
+}
+
+/* Hero system-visual flow animation — subtle, slow, decorative only.
+ * Disabled globally under prefers-reduced-motion above. */
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+.hero-flow-line {
+  stroke-dasharray: 4 6;
+  animation: flow-dash 5s linear infinite;
 }
