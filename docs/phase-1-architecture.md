@@ -6,6 +6,31 @@ Scope: Product architecture, UX architecture, design system, and content rules t
 
 ---
 
+## Development Roadmap (Authoritative)
+
+This is the approved six-phase sequence. It supersedes any phase numbering
+implied elsewhere in this document (e.g. section H's "Phase 4" for the
+architecture demo, or section P's original seven-phase table) — where
+those conflict with the list below, this list wins.
+
+| Phase | Name | Scope |
+|---|---|---|
+| **1** | Architecture & Design System | Brand direction, colors, typography, spacing, components, navigation, page architecture, responsive rules — this document. |
+| **2** | Homepage | Hero, problem framing, capabilities, proof, Siraj Din case study, process, technology, security, CTA, footer — all as homepage sections, not separate pages. |
+| **3** | Interactive Experiences | Architecture demo, CRM demo, dashboard demo, workflow builder — only where they genuinely add value (see section H's per-concept verdicts). |
+| **4** | Secondary Pages | Services, case studies, About, Contact, Project Estimator — as dedicated routes. |
+| **5** | Engineering | Forms, validation, SEO, structured data, performance, accessibility, security review. |
+| **6** | Final QA | Desktop/mobile/browser testing, Lighthouse/Core Web Vitals, build, TypeScript, ESLint, broken links, console errors, conversion review, truthfulness audit. |
+
+**Key implication for the rest of this document:** the Siraj Din case
+study, the process overview, and the technology/security content ship
+first as homepage sections (Phase 2), and only later become dedicated
+pages (`/work/siraj-din-electronics`, `/process`) in Phase 4. Both forms
+are legitimate — section E documents the Phase 2 homepage form, section D
+and section I document the Phase 4 dedicated-page form.
+
+---
+
 ## A. Repository Assessment
 
 **Current state (verified by inspection, nothing modified):**
@@ -91,7 +116,9 @@ Anything beyond these four (team size, years in business, number of clients, awa
 
 ## D. Sitemap
 
-**Recommended pages (launch set):**
+**Phasing note:** the pages below are **Phase 4 (Secondary Pages)** deliverables — dedicated routes built after the Phase 2 homepage and Phase 3 interactive experiences. Home (`/`) ships in Phase 2. `/work/siraj-din-electronics` and `/process` cover the same underlying content that already exists as Phase 2 homepage sections (see the roadmap note above) — Phase 4 gives that content its own page and URL; it doesn't introduce new content. `/estimator` and `/contact` have no homepage equivalent — they're new in Phase 4.
+
+**Recommended pages (full sitemap, once Phase 4 is complete):**
 
 | Path | Page | Include? | Why |
 |---|---|---|---|
@@ -107,8 +134,8 @@ Anything beyond these four (team size, years in business, number of clients, awa
 
 **Deliberately excluded at launch:**
 - **`/solutions` as a separate page from `/services`** — would duplicate content and split SEO equity. Instead, `/services` itself is organized by business problem ("You need to sell online," "You need to replace spreadsheets," "You need a customer portal") with the specific deliverable (e-commerce platform, CRM, admin dashboard) named underneath each — this *is* the solutions framing, just not a second page.
-- **`/technology`** — a dedicated tech-stack page reads as written for developers, not the buyer. Confirmed technologies are surfaced briefly in Process and in case-study "Technology used" sections instead (see K).
-- **`/security` as its own page** — not enough distinct content to justify a standalone page yet; it's a subsection of `/process`. Revisit as a dedicated page once more engineering-practice content exists.
+- **`/technology`** — a dedicated tech-stack page reads as written for developers, not the buyer. Confirmed technologies are surfaced as a homepage section (Phase 2) and in case-study "Technology used" sections instead (see K).
+- **`/security` as its own page** — not enough distinct content to justify a standalone page; it's presented as a homepage section (Phase 2) and folded into `/process` once that page exists (Phase 4).
 - **Team/office/history content on `/about`** — omitted entirely rather than fabricated.
 
 **Per-page detail:**
@@ -191,26 +218,31 @@ Anything beyond these four (team size, years in business, number of clients, awa
 
 Sequenced against the funnel in the brief (Trust → Understanding → Proof → Desire → Conversation), front-loading *understanding* right after the hero so the visitor feels correctly diagnosed before being sold anything.
 
+Per the authoritative roadmap, Phase 2 carries the case study, process, and
+technology/security content directly on the homepage — there is no
+`/services`, `/work`, or `/process` page yet for these sections to link
+out to, so within Phase 2 they're self-contained rather than teasers.
+Cross-page links (e.g. "View full case study" → `/work/siraj-din-electronics`)
+become meaningful once Phase 4 ships those pages, and can be added to
+these sections at that point without changing their content.
+
 | # | Section | Objective | Visitor question answered | CTA | Fold |
 |---|---|---|---|---|---|
 | 1 | Hero | State positioning immediately | "What does this company actually do?" | Primary: Start a Project · Secondary: View Our Work | Above |
 | 2 | Problems we solve | Make the visitor feel understood before being sold to | "Do they get my actual problem?" | none (sets up next section) | Just below fold |
-| 3 | What we build | Show breadth without overload, problem-organized | "Can they build what I need?" | "See all services" → `/services` | Below |
-| 4 | Featured work | Proof via one real, specific system | "Have they actually done this?" | "View case study" → `/work/[slug]` | Below |
-| 5 | How we work | Demystify engagement, reduce risk | "What happens if I contact them?" | "See our process" → `/process` | Below |
-| 6 | Why custom software | Reframe value: system built around them, not a template | "Why not just use off-the-shelf tools?" | none (persuasion, not action) | Below |
-| 7 | Engineering discipline (brief) | Trust without fear tactics | "Is this safe/professional?" | none | Below |
-| 8 | Project qualification teaser | Route serious visitors into a structured path | "How do I actually start?" | "Start the Project Estimator" → `/estimator` | Below |
-| 9 | Final CTA | Convert | "I'm ready to talk." | Primary: Start a Project · Secondary: Contact directly | Below |
+| 3 | What we build (Capabilities) | Show breadth without overload, problem-organized | "Can they build what I need?" | none in Phase 2 (`/services` doesn't exist until Phase 4) | Below |
+| 4 | Proof / Siraj Din case study | Proof via one real, specific system, framed as evidence over exaggeration | "Have they actually done this?" | none in Phase 2 | Below |
+| 5 | Process overview | Demystify engagement, reduce risk | "What happens if I contact them?" | none in Phase 2 | Below |
+| 6 | Technology & Security | Trust without fear tactics; verifiable stack, not a developer-facing tech wall | "Is this safe/professional? What do they actually build with?" | none | Below |
+| 7 | Final CTA | Convert | "I'm ready to talk." | Primary: Start a Project | Below |
 
-**Explicitly not on the homepage at launch:**
-- Interactive demo — deferred to Phase 4, and only the architecture-diagram concept (see H) is approved at all. Nothing simulated ships until it's built deliberately.
-- A dedicated "Technology" section — technology is mentioned in passing (Process section, footer) but is not a homepage pillar, per the "don't build for developers" rule.
+**Explicitly not on the homepage in Phase 2:**
+- Interactive demo — deferred to Phase 3, and only the architecture-diagram concept (see H) is approved at all. Nothing simulated ships until it's built deliberately.
 - Testimonials / client logos — none exist; the section is omitted entirely rather than left empty or faked.
 
-Per section, for implementation reference in Phase 2+:
-- **Interaction level**: sections 1, 4, 8 may carry light interactivity (hero visual, case-study preview, estimator teaser); everything else is static content with scroll-reveal only.
-- **Mobile behavior**: every section stacks to single-column; section 3 ("what we build") and section 4 (proof) go from grid/side-by-side to stacked cards; no hover-dependent content anywhere (see M).
+Per section, for implementation reference:
+- **Interaction level**: the hero visual and case-study spotlight may carry light static/SVG treatment; everything else is static content with scroll-reveal only.
+- **Mobile behavior**: every section stacks to single-column; the capabilities and case-study sections go from grid/side-by-side to stacked cards; no hover-dependent content anywhere (see M).
 
 ---
 
@@ -353,12 +385,12 @@ Evaluated against one test: does it demonstrate real capability, or is it decora
 
 | Concept | Verdict | Reasoning |
 |---|---|---|
-| **Business system architecture visualization** (User → Frontend → API → Auth → Business Logic → Database → Integrations) | **Build in Phase 4** | Directly demonstrates the "we engineer the system" positioning; can be built as SVG/CSS with scroll- or click-driven highlighting — no WebGL required; low technical complexity, low performance risk. |
+| **Business system architecture visualization** (User → Frontend → API → Auth → Business Logic → Database → Integrations) | **Build in Phase 3** | Directly demonstrates the "we engineer the system" positioning; can be built as SVG/CSS with scroll- or click-driven highlighting — no WebGL required; low technical complexity, low performance risk. |
 | **CRM pipeline demo** (Lead → Qualification → Pipeline → Customer → Task → Notification) | **Reject as standalone** | Aveniq doesn't sell a generic CRM product, so a simulated one risks looking like an off-the-shelf template demo. Fold the equivalent idea into the real case study instead (Siraj Din's application/admin workflow already covers this ground honestly). |
 | **Fictional dashboard with filtering** | **Reject** | Exactly the "generic AI startup / dashboard template" look the brief warns against. Use real (or realistically anonymized) screenshots from the Siraj Din admin panel instead — actual evidence beats simulated data. |
 | **Visual workflow builder** (drag/connect nodes) | **Reject for now** | High build complexity, high risk of being a "cool but pointless" gimmick, and doesn't map to a product Aveniq currently delivers. Revisit only if Aveniq builds and can honestly demo a real workflow/automation product for a client. |
 
-**For the one approved concept (architecture diagram), required before Phase 4 build starts:**
+**For the one approved concept (architecture diagram), required before Phase 3 build starts:**
 - Purpose: show, not tell, what "engineering the system" means.
 - Interaction model: click/tap or scroll-triggered stage reveal; no drag, no physics, no WebGL.
 - Mobile behavior: degrades to a vertical stacked diagram with captions — never relies on hover.
@@ -368,6 +400,8 @@ Evaluated against one test: does it demonstrate real capability, or is it decora
 ---
 
 ## I. Case Study Architecture
+
+**Phasing note:** this is the full structure for the dedicated case-study page (`/work/siraj-din-electronics`, Phase 4). The Phase 2 homepage spotlight uses a condensed version of the same underlying data (client, industry, project type, summary, functionality, outcomes) without the deep dive into the installment calculator, the admin-system walkthrough, or a screenshot gallery — those stay page-level depth for Phase 4.
 
 **Card (index page):** project name, one-line problem statement, 2–3 capability tags (e.g., "Product Catalogue," "Installment Engine," "Admin Panel"), thumbnail, "View case study" link.
 
@@ -464,7 +498,7 @@ Target: WCAG 2.2 AA.
 | `clsx` / `tailwind-merge` | **Not justified — use a native alternative** | A ~5-line dependency-free `cn()` helper covers conditional class composition without adding two packages. |
 | Framer Motion | **Not justified at launch** | The defined motion system (subtle fades, hover micro-interactions, scroll reveals) is achievable with CSS transitions + `IntersectionObserver`. Revisit only if the architecture diagram needs orchestration CSS genuinely can't do cleanly. |
 | Three.js / React Three Fiber | **Not justified** | Hero strategy (F/H) explicitly avoids WebGL at launch; no confirmed use case earns the bundle-size and performance cost. Revisit only with a specific, approved 3D use case, isolated via dynamic import. |
-| React Hook Form + a validation library | **Justified starting Phase 5** | Needed once the Estimator and Contact forms are actually built — not before. |
+| React Hook Form + a validation library | **Justified starting Phase 4/5** | Needed once the Estimator and Contact forms exist (Phase 4) and are hardened with validation (Phase 5) — not before. |
 | MDX / CMS | **Not justified** | Case study and service content is small and structured; typed static TypeScript/JSON data modules (see O) are simpler and sufficient. |
 
 ---
@@ -481,15 +515,16 @@ Target: WCAG 2.2 AA.
 
 ## P. Implementation Roadmap
 
+This table mirrors the authoritative roadmap at the top of this document.
+
 | Phase | Deliverables | Dependencies | Key risks | Validation |
 |---|---|---|---|---|
-| **1 — Architecture (this document)** | This blueprint, approved | None | Approving assumptions that later prove wrong | Your sign-off (section Q) |
-| **2 — Design tokens + core shell** | `@theme` tokens in `globals.css`, Navbar/Footer/Container/Section/Button/Card/Heading/Text primitives, real homepage structure with real (non-fabricated) copy | Phase 1 approval | Token/contrast mistakes baked into every component | Lint + typecheck + build clean; manual contrast check |
-| **3 — Services + Work** | `/services`, `/work`, `/work/[slug]`, Siraj Din Electronics case study populated from real data | Phase 2 primitives, real case-study assets/screenshots supplied | Missing real screenshots/tech-stack confirmation stalls the page | Content reviewed against Truth & Credibility rules (N) |
-| **4 — Architecture-diagram interactive demo** | The one approved interactive experience, accessible + reduced-motion safe | Phase 2 primitives | Scope creep toward a "cool but pointless" build | Keyboard/screen-reader test, `prefers-reduced-motion` test, mobile fallback check |
-| **5 — Estimator + Contact** | Multi-step estimator, contact form, lead-capture wiring | Decision needed on lead destination (email vs. service vs. future CRM — see Q) | Building auth/DB prematurely if lead handling isn't scoped correctly | Form accessibility test, end-to-end submission test |
-| **6 — SEO + Performance + Accessibility hardening** | Sitemap/robots/structured data, Lighthouse + axe pass, image/font audit | All content pages exist | Retrofitting SEO/a11y late is more expensive than building it in | Lighthouse "Good" on mobile, axe zero critical issues |
-| **7 — Final QA + production deploy** | Cross-browser/device QA, full content proofread against Truth & Credibility rules, Vercel production deploy | All prior phases | Shipping an unverified claim | Manual content audit + smoke test on production |
+| **1 — Architecture & Design System (this document)** | Brand direction, colors, typography, spacing, components, navigation, page architecture, responsive rules | None | Approving assumptions that later prove wrong | Your sign-off (section Q) |
+| **2 — Homepage** | Hero, problem framing, capabilities, proof/Siraj Din case study, process, technology, security, and final CTA as homepage sections; Navbar/Footer/Container/Section/Button/Card/Heading/Text primitives; `@theme` tokens in `globals.css` | Phase 1 approval | Token/contrast mistakes baked into every component; embedding case-study content without real screenshots | Lint + typecheck + build clean; manual contrast check; content reviewed against Truth & Credibility rules (N) |
+| **3 — Interactive Experiences** | The one approved concept — the architecture-diagram visualization — built accessibly and reduced-motion safe; CRM demo, dashboard demo, and workflow builder built only if a genuine value case emerges (see H) | Phase 2 primitives | Scope creep toward a "cool but pointless" build | Keyboard/screen-reader test, `prefers-reduced-motion` test, mobile fallback check |
+| **4 — Secondary Pages** | `/services`, `/work`, `/work/siraj-din-electronics` (full case-study depth, see I), `/about`, `/contact`, `/estimator` | Phase 2 primitives; real case-study assets/screenshots supplied; legal-entity details for any future legal pages | Missing real screenshots/tech-stack confirmation stalls the case-study page; building auth/DB prematurely if lead handling isn't scoped correctly | Content reviewed against Truth & Credibility rules (N); form accessibility test |
+| **5 — Engineering** | Forms, validation, SEO (sitemap/robots/structured data), performance pass, accessibility hardening, security review | All Phase 4 content pages exist | Retrofitting SEO/a11y late is more expensive than building it in | Lighthouse "Good" on mobile, axe zero critical issues |
+| **6 — Final QA** | Desktop/mobile/browser testing, Lighthouse/Core Web Vitals, build/TypeScript/ESLint checks, broken-link check, console-error check, conversion review, truthfulness audit, production deploy | All prior phases | Shipping an unverified claim | Manual content audit + smoke test on production |
 
 ---
 
