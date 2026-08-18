@@ -237,7 +237,7 @@ these sections at that point without changing their content.
 | 7 | Final CTA | Convert | "I'm ready to talk." | Primary: Start a Project | Below |
 
 **Explicitly not on the homepage in Phase 2:**
-- Interactive demo — deferred to Phase 3, and only the architecture-diagram concept (see H) is approved at all. Nothing simulated ships until it's built deliberately.
+- Interactive demos — deferred to Phase 3 (see H for the final built/rejected outcome). Nothing simulated ships until it's built deliberately.
 - Testimonials / client logos — none exist; the section is omitted entirely rather than left empty or faked.
 
 Per section, for implementation reference:
@@ -383,14 +383,16 @@ Trust (hero states positioning plainly) → Understanding (problems-we-solve, wh
 
 Evaluated against one test: does it demonstrate real capability, or is it decoration?
 
+**Status: Phase 3 is complete.** The table below reflects the final, as-built outcome — two experiences built, two rejected.
+
 | Concept | Verdict | Reasoning |
 |---|---|---|
-| **Business system architecture visualization** (User → Frontend → API → Auth → Business Logic → Database → Integrations) | **Build in Phase 3** | Directly demonstrates the "we engineer the system" positioning; can be built as SVG/CSS with scroll- or click-driven highlighting — no WebGL required; low technical complexity, low performance risk. |
-| **CRM pipeline demo** (Lead → Qualification → Pipeline → Customer → Task → Notification) | **Reject as standalone** | Aveniq doesn't sell a generic CRM product, so a simulated one risks looking like an off-the-shelf template demo. Fold the equivalent idea into the real case study instead (Siraj Din's application/admin workflow already covers this ground honestly). |
-| **Fictional dashboard with filtering** | **Reject** | Exactly the "generic AI startup / dashboard template" look the brief warns against. Use real (or realistically anonymized) screenshots from the Siraj Din admin panel instead — actual evidence beats simulated data. |
-| **Visual workflow builder** (drag/connect nodes) | **Reject for now** | High build complexity, high risk of being a "cool but pointless" gimmick, and doesn't map to a product Aveniq currently delivers. Revisit only if Aveniq builds and can honestly demo a real workflow/automation product for a client. |
+| **Business system architecture visualization** (User → Frontend → API → Auth → Business Logic → Database → Integrations) | **Built in Phase 3** | Highest demonstration value; directly supports Aveniq's systems-thinking positioning and demonstrates architecture and technical understanding. Implemented with SVG/CSS/React state — no WebGL required. |
+| **CRM pipeline demo** (Lead → Qualification → Pipeline → Customer → Task → Notification) | **Built in Phase 3** | Provides a different demonstration from the architecture visualization — applied business workflow/product UX rather than technical layers. Uses fictional/demo data only, explicit button-based stage movement (no drag-and-drop), is fully keyboard accessible, and holds local/demo state only. **This supersedes this document's earlier "reject as standalone" verdict** — the tighter scoping (small record set, clear "Interactive Demo — Fictional Records" labeling, no drag-and-drop) addressed the original off-the-shelf-template concern. |
+| **Fictional dashboard with filtering** | **Rejected** | Overlaps heavily with the CRM demo's data-in-a-UI demonstration value; higher risk of looking like a generic SaaS dashboard template. Didn't provide enough additional demonstration value to justify a third experience. |
+| **Visual workflow builder** (drag/connect nodes) | **Rejected** | Overlaps conceptually with the architecture visualization — both are connected-node diagrams. Higher accessibility and implementation complexity, higher gimmick risk, and doesn't map closely enough to demonstrated real Aveniq work. |
 
-**For the one approved concept (architecture diagram), required before Phase 3 build starts:**
+**Implementation requirements applied to the architecture demo in Phase 3:**
 - Purpose: show, not tell, what "engineering the system" means.
 - Interaction model: click/tap or scroll-triggered stage reveal; no drag, no physics, no WebGL.
 - Mobile behavior: degrades to a vertical stacked diagram with captions — never relies on hover.
@@ -521,7 +523,7 @@ This table mirrors the authoritative roadmap at the top of this document.
 |---|---|---|---|---|
 | **1 — Architecture & Design System (this document)** | Brand direction, colors, typography, spacing, components, navigation, page architecture, responsive rules | None | Approving assumptions that later prove wrong | Your sign-off (section Q) |
 | **2 — Homepage** | Hero, problem framing, capabilities, proof/Siraj Din case study, process, technology, security, and final CTA as homepage sections; Navbar/Footer/Container/Section/Button/Card/Heading/Text primitives; `@theme` tokens in `globals.css` | Phase 1 approval | Token/contrast mistakes baked into every component; embedding case-study content without real screenshots | Lint + typecheck + build clean; manual contrast check; content reviewed against Truth & Credibility rules (N) |
-| **3 — Interactive Experiences** | The one approved concept — the architecture-diagram visualization — built accessibly and reduced-motion safe; CRM demo, dashboard demo, and workflow builder built only if a genuine value case emerges (see H) | Phase 2 primitives | Scope creep toward a "cool but pointless" build | Keyboard/screen-reader test, `prefers-reduced-motion` test, mobile fallback check |
+| **3 — Interactive Experiences (complete)** | Built: the architecture-diagram visualization and the CRM demo, both accessible and reduced-motion safe. Rejected: dashboard demo and workflow builder (see H for reasoning) | Phase 2 primitives | Scope creep toward a "cool but pointless" build | Keyboard/screen-reader test, `prefers-reduced-motion` test, mobile fallback check |
 | **4 — Secondary Pages** | `/services`, `/work`, `/work/siraj-din-electronics` (full case-study depth, see I), `/about`, `/contact`, `/estimator` | Phase 2 primitives; real case-study assets/screenshots supplied; legal-entity details for any future legal pages | Missing real screenshots/tech-stack confirmation stalls the case-study page; building auth/DB prematurely if lead handling isn't scoped correctly | Content reviewed against Truth & Credibility rules (N); form accessibility test |
 | **5 — Engineering** | Forms, validation, SEO (sitemap/robots/structured data), performance pass, accessibility hardening, security review | All Phase 4 content pages exist | Retrofitting SEO/a11y late is more expensive than building it in | Lighthouse "Good" on mobile, axe zero critical issues |
 | **6 — Final QA** | Desktop/mobile/browser testing, Lighthouse/Core Web Vitals, build/TypeScript/ESLint checks, broken-link check, console-error check, conversion review, truthfulness audit, production deploy | All prior phases | Shipping an unverified claim | Manual content audit + smoke test on production |
