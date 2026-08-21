@@ -66,15 +66,21 @@ model Inquiry {
   source      InquirySource
   status      InquiryStatus @default(NEW)
 
-  name    String
-  email   String
+  // Optional because an ESTIMATOR-source row can be created before the
+  // visitor has provided any contact info (the estimator itself never
+  // asks for a name or email) — see app/api/estimator/route.ts. Every
+  // CONTACT-source row always has both; enforced at the API layer.
+  name    String?
+  email   String?
   company String?
   phone   String?
   message String?
 
-  // Estimator-specific structured answers (project type, business type,
-  // problem, user scale, functionality, platform, timeline, budget).
-  estimatorAnswers Json?
+  // The full structured submission — every contact-form field for
+  // CONTACT-source rows, or every estimator answer for ESTIMATOR-source
+  // rows — so the admin inquiry detail view can show the complete
+  // original submission regardless of source.
+  details Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,21 +1,26 @@
 import { NextResponse } from "next/server";
-import { validateContactPayload, type ContactFieldName } from "@/lib/contact-validation";
+import { CONTACT_MAX_LENGTHS, validateContactPayload, type ContactFieldName } from "@/lib/contact-validation";
+import { prisma } from "@/lib/prisma";
 import { getClientIp, isRateLimited } from "@/lib/rate-limit";
 
 /**
  * Contact form submission endpoint.
  *
- * Sends via Resend's REST API (https://resend.com) using plain `fetch` —
- * deliberately no SDK dependency. Requires RESEND_API_KEY and
- * CONTACT_TO_EMAIL to be set (see .env.example); until they are, this
- * route correctly reports itself as unconfigured rather than faking
- * success — see docs/phase-1-architecture.md's truth-first rules.
+ * Every valid submission is persisted as an Inquiry row first — that's
+ * the real, durable capture of the lead and doesn't require any external
+ * configuration. Sending a notification email via Resend's REST API
+ * (plain `fetch`, no SDK) is a best-effort side channel on top of that:
+ * if RESEND_API_KEY/CONTACT_TO_EMAIL aren't set, or the Resend request
+ * fails, the inquiry is still safely in the database and visible in the
+ * admin dashboard — so the response can honestly report success either
+ * way. Only a failure to persist the inquiry itself is reported as an
+ * error.
  *
  * Spam mitigation (no CAPTCHA, kept low-friction):
  * - Honeypot field ("website") — bots that autofill it are silently
  *   dropped (reported as success so scripts don't adapt; this deceives
  *   automated abuse, not a real visitor, since no human ever fills a
- *   hidden field).
+ *   hidden field). Nothing is written to the database for these.
  * - Minimum time-on-page — submissions faster than a human could
  *   plausibly fill the form are silently dropped the same way.
  * - A best-effort in-memory rate limit per IP. This resets whenever the
@@ -61,21 +66,41 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, errors }, { status: 400 });
   }
 
+  const fields = data as Record<ContactFieldName, string>;
+  const details = Object.fromEntries(
+    (Object.keys(CONTACT_MAX_LENGTHS) as ContactFieldName[]).map((key) => [key, fields[key] ?? ""]),
+  );
+
+  try {
+    await prisma.inquiry.create({
+      data: {
+        source: "CONTACT",
+        name: fields.name,
+        email: fields.email,
+        company: fields.company || null,
+        phone: fields.phone || null,
+        message: fields.problem || null,
+        details,
+      },
+    });
+  } catch (error) {
+    console.error("Contact form: failed to save inquiry.", error);
+    return NextResponse.json(
+      { ok: false, error: "Something went wrong saving your inquiry. Please try again." },
+      { status: 500 },
+    );
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.CONTACT_TO_EMAIL;
 
   if (!apiKey || !toEmail) {
-    console.error("Contact form: RESEND_API_KEY or CONTACT_TO_EMAIL is not configured.");
-    return NextResponse.json(
-      {
-        ok: false,
-        error: "This form isn't connected to a live inbox yet. Please try again later.",
-      },
-      { status: 503 },
+    console.warn(
+      "Contact form: RESEND_API_KEY or CONTACT_TO_EMAIL is not configured — inquiry saved, notification email skipped.",
     );
+    return NextResponse.json({ ok: true });
   }
 
-  const fields = data as Record<ContactFieldName, string>;
   const summary = (Object.keys(fields) as ContactFieldName[])
     .filter((key) => fields[key]?.trim())
     .map((key) => `${key}: ${fields[key]}`)
@@ -98,18 +123,10 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
-      console.error("Contact form: Resend API returned", response.status);
-      return NextResponse.json(
-        { ok: false, error: "Something went wrong sending your inquiry. Please try again." },
-        { status: 502 },
-      );
+      console.error("Contact form: Resend API returned", response.status, "— inquiry was still saved.");
     }
   } catch (error) {
-    console.error("Contact form: failed to reach email provider.", error);
-    return NextResponse.json(
-      { ok: false, error: "Something went wrong sending your inquiry. Please try again." },
-      { status: 502 },
-    );
+    console.error("Contact form: failed to reach email provider — inquiry was still saved.", error);
   }
 
   return NextResponse.json({ ok: true });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
@@ -72,6 +72,19 @@ export function EstimatorFlow() {
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<EstimatorAnswers>({});
   const [isComplete, setIsComplete] = useState(false);
+  const hasSubmitted = useRef(false);
+
+  useEffect(() => {
+    if (!isComplete || hasSubmitted.current) return;
+    hasSubmitted.current = true;
+    fetch("/api/estimator", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(answers),
+    }).catch(() => {
+      // Best-effort — the visitor still sees their profile either way.
+    });
+  }, [isComplete, answers]);
 
   const step = estimatorSteps[stepIndex];
   const totalSteps = estimatorSteps.length;
@@ -113,6 +126,7 @@ export function EstimatorFlow() {
     setAnswers({});
     setStepIndex(0);
     setIsComplete(false);
+    hasSubmitted.current = false;
   }
 
   if (isComplete) {
