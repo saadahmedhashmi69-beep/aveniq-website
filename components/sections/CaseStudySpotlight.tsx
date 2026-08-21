@@ -3,7 +3,8 @@ import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Section } from "@/components/ui/Section";
 import { Text } from "@/components/ui/Text";
-import { caseStudies } from "@/lib/data/case-studies";
+import { asStringArray } from "@/lib/data/project-helpers";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Combines the "proof / trust" framing with the Siraj Din Electronics
@@ -11,8 +12,17 @@ import { caseStudies } from "@/lib/data/case-studies";
  * truth-first rules. No screenshots are shown here (none are available
  * yet); the section relies on real project description, not imagery.
  */
-export function CaseStudySpotlight() {
-  const caseStudy = caseStudies[0];
+export async function CaseStudySpotlight() {
+  const project = await prisma.project.findFirst({
+    where: { status: "VERIFIED", published: true },
+    orderBy: { order: "asc" },
+  });
+
+  if (!project) return null;
+
+  const customerExperience = asStringArray(project.customerExperience);
+  const adminExperience = asStringArray(project.adminExperience);
+  const outcomes = asStringArray(project.outcomes);
 
   return (
     <Section className="border-b border-edge bg-surface/40">
@@ -29,15 +39,15 @@ export function CaseStudySpotlight() {
         </div>
 
         <div className="mt-10 rounded-xl border border-edge bg-surface p-8 md:p-10">
-          <Badge>{caseStudy.industry}</Badge>
+          <Badge>{project.industry}</Badge>
           <Heading as="h3" size="h2" className="mt-5">
-            {caseStudy.client}
+            {project.companyName}
           </Heading>
           <Text size="base" muted className="mt-2 font-medium text-ink-muted">
-            {caseStudy.projectType}
+            {project.type}
           </Text>
           <Text size="base" muted className="mt-4 max-w-2xl">
-            {caseStudy.summary}
+            {project.summary}
           </Text>
 
           <div className="mt-8 grid gap-8 sm:grid-cols-2">
@@ -46,7 +56,7 @@ export function CaseStudySpotlight() {
                 For customers
               </Text>
               <ul className="mt-3 flex flex-col gap-2">
-                {caseStudy.customerFeatures.map((feature) => (
+                {customerExperience.map((feature) => (
                   <li key={feature} className="flex items-start gap-3 text-sm text-ink-muted">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
                     {feature}
@@ -59,7 +69,7 @@ export function CaseStudySpotlight() {
                 Behind the scenes
               </Text>
               <ul className="mt-3 flex flex-col gap-2">
-                {caseStudy.adminFeatures.map((feature) => (
+                {adminExperience.map((feature) => (
                   <li key={feature} className="flex items-start gap-3 text-sm text-ink-muted">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
                     {feature}
@@ -74,7 +84,7 @@ export function CaseStudySpotlight() {
               What it enables
             </Text>
             <ul className="mt-3 flex flex-col gap-2 sm:grid sm:grid-cols-2 sm:gap-x-8 sm:gap-y-2">
-              {caseStudy.outcomes.map((outcome) => (
+              {outcomes.map((outcome) => (
                 <li key={outcome} className="flex items-start gap-3 text-sm text-ink-muted">
                   <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-success" aria-hidden="true" />
                   {outcome}

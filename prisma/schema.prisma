@@ -141,6 +141,11 @@ model Project {
   responsiveExperience String
   designApproach       String
 
+  // Capability-oriented statements of what the system enables — never
+  // revenue, conversion, or adoption figures (see prisma/data/projects.ts
+  // for the truthfulness rules this field must follow).
+  outcomes Json
+
   technology     Json
   projectScope   String
   deliverables   Json

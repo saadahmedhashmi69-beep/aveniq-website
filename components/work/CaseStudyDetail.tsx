@@ -1,10 +1,13 @@
+import type { ReactNode } from "react";
+import type { Project } from "@prisma/client";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Section } from "@/components/ui/Section";
 import { Text } from "@/components/ui/Text";
-import type { CaseStudy } from "@/types";
+import { ProjectStatusBadge } from "@/components/work/ProjectStatusBadge";
+import { asStringArray } from "@/lib/data/project-helpers";
 
 function NumberedSection({
   number,
@@ -13,7 +16,7 @@ function NumberedSection({
 }: {
   number: string;
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="border-t border-edge py-10 first:border-t-0 first:pt-0">
@@ -43,30 +46,48 @@ function FeatureList({ items }: { items: string[] }) {
   );
 }
 
-export function CaseStudyDetail({ caseStudy }: { caseStudy: CaseStudy }) {
-  const remaining = caseStudy.installmentExample
-    ? caseStudy.installmentExample.cashPrice - caseStudy.installmentExample.downPayment
-    : null;
-  const monthly =
-    remaining !== null && caseStudy.installmentExample
-      ? Math.round(remaining / caseStudy.installmentExample.durationMonths)
-      : null;
+export function CaseStudyDetail({ project }: { project: Project }) {
+  const challenge = asStringArray(project.challenge);
+  const objectives = asStringArray(project.objectives);
+  const architecture = asStringArray(project.architecture);
+  const keyFeatures = asStringArray(project.keyFeatures);
+  const customerExperience = asStringArray(project.customerExperience);
+  const adminExperience = asStringArray(project.adminExperience);
+  const workflows = asStringArray(project.workflows);
+  const integrations = asStringArray(project.integrations);
+  const security = asStringArray(project.security);
+  const technology = asStringArray(project.technology);
+  const deliverables = asStringArray(project.deliverables);
+  const outcomes = asStringArray(project.outcomes);
+  const isConcept = project.status !== "VERIFIED";
 
   return (
     <>
       <section className="border-b border-edge">
         <Container className="py-16 md:py-24">
           <div className="max-w-3xl">
-            <Badge>{caseStudy.industry}</Badge>
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge>{project.industry}</Badge>
+              <ProjectStatusBadge status={project.status} />
+            </div>
             <Heading as="h1" size="h1" className="mt-4">
-              {caseStudy.client}
+              {project.projectName}
             </Heading>
             <Text size="base" className="mt-2 font-medium text-ink-muted">
-              {caseStudy.projectType}
+              {project.companyName} — {project.type}
             </Text>
             <Text size="lg" muted className="mt-5 max-w-2xl">
-              {caseStudy.summary}
+              {project.summary}
             </Text>
+            {isConcept ? (
+              <div className="mt-6 max-w-2xl rounded-lg border border-edge-strong bg-surface p-4">
+                <Text size="sm" muted>
+                  This is an illustrative concept representing the kind of system Aveniq designs —
+                  not a delivered engagement for a real, named client. Company names shown as{" "}
+                  <span className="font-mono">[COMPANY NAME]</span> are placeholders.
+                </Text>
+              </div>
+            ) : null}
           </div>
         </Container>
       </section>
@@ -75,88 +96,99 @@ export function CaseStudyDetail({ caseStudy }: { caseStudy: CaseStudy }) {
         <Container>
           <NumberedSection number="01" title="Overview">
             <Text size="base" muted>
-              {caseStudy.summary}
+              {project.overview}
             </Text>
           </NumberedSection>
 
           <NumberedSection number="02" title="Business Context">
-            <div className="flex flex-col gap-4">
-              {caseStudy.challenge.map((paragraph) => (
-                <Text key={paragraph} size="base" muted>
-                  {paragraph}
-                </Text>
-              ))}
+            <FeatureList items={challenge} />
+          </NumberedSection>
+
+          <NumberedSection number="03" title="Objectives">
+            <FeatureList items={objectives} />
+          </NumberedSection>
+
+          <NumberedSection number="04" title="What We Built">
+            <Text size="base" muted>
+              {project.solution}
+            </Text>
+            <div className="mt-5">
+              <Text size="sm" className="mb-3 font-semibold text-ink">
+                Architecture
+              </Text>
+              <FeatureList items={architecture} />
             </div>
           </NumberedSection>
 
-          <NumberedSection number="03" title="What We Built">
-            <Text size="base" muted>
-              The system covers two sides: what customers see when browsing and applying, and
-              what the Siraj Din Electronics team uses to manage products and review
-              applications day to day.
-            </Text>
+          <NumberedSection number="05" title="Key Features">
+            <FeatureList items={keyFeatures} />
           </NumberedSection>
 
-          <NumberedSection number="04" title="Customer Experience">
-            <FeatureList items={caseStudy.customerFeatures} />
+          <NumberedSection number="06" title="Customer Experience">
+            <FeatureList items={customerExperience} />
           </NumberedSection>
 
-          <NumberedSection number="05" title="Business / Admin Experience">
-            <FeatureList items={caseStudy.adminFeatures} />
+          <NumberedSection number="07" title="Business / Admin Experience">
+            <FeatureList items={adminExperience} />
           </NumberedSection>
 
-          <NumberedSection number="06" title="Key System Capabilities">
-            <Text size="base" muted>
-              Customers can choose a down payment and installment duration that fits their
-              budget, with the system calculating the remaining plan. Here&apos;s how that works,
-              using example figures:
-            </Text>
+          <NumberedSection number="08" title="Workflows">
+            <FeatureList items={workflows} />
+          </NumberedSection>
 
-            {caseStudy.installmentExample && remaining !== null && monthly !== null ? (
-              <div className="mt-5 rounded-lg border border-edge bg-surface p-6">
-                <Text size="xs" className="font-semibold uppercase tracking-wide text-ink-faint">
-                  Example — for illustration only, not real transaction data
+          <NumberedSection number="09" title="Integrations & Security">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+              <div>
+                <Text size="sm" className="mb-3 font-semibold text-ink">
+                  Integrations
                 </Text>
-                <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  <div>
-                    <dt className="text-xs text-ink-faint">Cash price</dt>
-                    <dd className="mt-1 font-mono text-lg text-ink">
-                      {caseStudy.installmentExample.cashPrice}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-ink-faint">Down payment</dt>
-                    <dd className="mt-1 font-mono text-lg text-ink">
-                      {caseStudy.installmentExample.downPayment}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-ink-faint">Duration</dt>
-                    <dd className="mt-1 font-mono text-lg text-ink">
-                      {caseStudy.installmentExample.durationMonths} months
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-ink-faint">Per-period amount</dt>
-                    <dd className="mt-1 font-mono text-lg text-accent">~{monthly}</dd>
-                  </div>
-                </dl>
+                <FeatureList items={integrations} />
               </div>
-            ) : null}
+              <div>
+                <Text size="sm" className="mb-3 font-semibold text-ink">
+                  Security
+                </Text>
+                <FeatureList items={security} />
+              </div>
+            </div>
+          </NumberedSection>
 
-            <Text size="sm" muted className="mt-6">
-              {caseStudy.technologyNote}
+          <NumberedSection number="10" title="Design & Responsive Experience">
+            <Text size="base" muted>
+              {project.designApproach}
+            </Text>
+            <Text size="base" muted className="mt-3">
+              {project.responsiveExperience}
             </Text>
           </NumberedSection>
 
-          <NumberedSection number="07" title="Outcome">
+          <NumberedSection number="11" title="Technology">
+            <FeatureList items={technology} />
+          </NumberedSection>
+
+          <NumberedSection number="12" title="Scope, Deliverables & Timeline">
+            <Text size="base" muted>
+              {project.projectScope}
+            </Text>
+            <div className="mt-5">
+              <Text size="sm" className="mb-3 font-semibold text-ink">
+                Deliverables
+              </Text>
+              <FeatureList items={deliverables} />
+            </div>
+            <Text size="sm" muted className="mt-5">
+              {project.timeline}
+            </Text>
+          </NumberedSection>
+
+          <NumberedSection number="13" title="Outcome">
             <Text size="base" muted className="mb-5">
               What the system enables:
             </Text>
-            <FeatureList items={caseStudy.outcomes} />
+            <FeatureList items={outcomes} />
           </NumberedSection>
 
-          {!caseStudy.screenshotsAvailable ? (
+          {!project.galleryAvailable ? (
             <div className="border-t border-edge py-10">
               <div className="flex min-h-[180px] flex-col items-center justify-center rounded-lg border border-dashed border-edge-strong text-center">
                 <Text size="sm" muted>
@@ -171,7 +203,7 @@ export function CaseStudyDetail({ caseStudy }: { caseStudy: CaseStudy }) {
       <Section className="border-t border-edge bg-surface/40">
         <Container className="flex flex-col items-start gap-8 md:flex-row md:items-center md:justify-between">
           <Heading as="h2" size="h3" className="max-w-lg">
-            Have a business workflow that needs a better system?
+            {project.ctaText}
           </Heading>
           <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
             <Button href="/estimator" variant="primary">

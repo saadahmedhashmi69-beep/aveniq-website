@@ -7,7 +7,7 @@ import { TextLink } from "@/components/ui/TextLink";
 import { PageHero } from "@/components/sections/PageHero";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { ServiceCategories } from "@/components/services/ServiceCategories";
-import { serviceCategories } from "@/lib/data/services";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = pageMetadata({
   title: "Services",
@@ -16,7 +16,12 @@ export const metadata = pageMetadata({
   path: "/services",
 });
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await prisma.service.findMany({
+    where: { published: true },
+    orderBy: { order: "asc" },
+  });
+
   return (
     <>
       <PageHero
@@ -27,7 +32,7 @@ export default function ServicesPage() {
 
       <Section>
         <Container>
-          <ServiceCategories categories={serviceCategories} />
+          <ServiceCategories services={services} />
         </Container>
       </Section>
 

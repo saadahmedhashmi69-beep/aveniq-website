@@ -1,34 +1,38 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CaseStudyDetail } from "@/components/work/CaseStudyDetail";
-import { caseStudies } from "@/lib/data/case-studies";
 import { pageMetadata } from "@/lib/metadata";
+import { prisma } from "@/lib/prisma";
 import { siteUrl } from "@/lib/site";
 
-export function generateStaticParams() {
-  return caseStudies.map((caseStudy) => ({ slug: caseStudy.slug }));
+export async function generateStaticParams() {
+  const projects = await prisma.project.findMany({
+    where: { published: true },
+    select: { slug: true },
+  });
+  return projects.map((project) => ({ slug: project.slug }));
 }
 
 export async function generateMetadata(props: PageProps<"/work/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
-  const caseStudy = caseStudies.find((entry) => entry.slug === slug);
+  const project = await prisma.project.findUnique({ where: { slug } });
 
-  if (!caseStudy) {
-    return { title: "Case Study" };
+  if (!project || !project.published) {
+    return { title: "Project" };
   }
 
   return pageMetadata({
-    title: caseStudy.client,
-    description: caseStudy.summary,
-    path: `/work/${caseStudy.slug}`,
+    title: project.projectName,
+    description: project.summary,
+    path: `/work/${project.slug}`,
   });
 }
 
 export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
   const { slug } = await props.params;
-  const caseStudy = caseStudies.find((entry) => entry.slug === slug);
+  const project = await prisma.project.findUnique({ where: { slug } });
 
-  if (!caseStudy) {
+  if (!project || !project.published) {
     notFound();
   }
 
@@ -41,8 +45,8 @@ export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
       {
         "@type": "ListItem",
         position: 3,
-        name: caseStudy.client,
-        item: `${siteUrl}/work/${caseStudy.slug}`,
+        name: project.projectName,
+        item: `${siteUrl}/work/${project.slug}`,
       },
     ],
   };
@@ -53,7 +57,7 @@ export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <CaseStudyDetail caseStudy={caseStudy} />
+      <CaseStudyDetail project={project} />
     </>
   );
 }

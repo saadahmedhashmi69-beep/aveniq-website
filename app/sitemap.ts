@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
-import { caseStudies } from "@/lib/data/case-studies";
+import { prisma } from "@/lib/prisma";
 import { siteUrl } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/services",
@@ -16,9 +16,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
   }));
 
-  const caseStudyRoutes = caseStudies.map((caseStudy) => ({
-    url: `${siteUrl}/work/${caseStudy.slug}`,
-    lastModified: new Date(),
+  const projects = await prisma.project.findMany({
+    where: { published: true },
+    select: { slug: true, updatedAt: true },
+  });
+  const caseStudyRoutes = projects.map((project) => ({
+    url: `${siteUrl}/work/${project.slug}`,
+    lastModified: project.updatedAt,
   }));
 
   return [...staticRoutes, ...caseStudyRoutes];

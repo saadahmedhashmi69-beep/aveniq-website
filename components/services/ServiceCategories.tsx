@@ -1,9 +1,12 @@
+import type { Service } from "@prisma/client";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
+import { asStringArray } from "@/lib/data/project-helpers";
 import { cn } from "@/lib/utils";
-import type { ServiceCategory } from "@/types";
 
-function CategorySections({ category }: { category: ServiceCategory }) {
+function CategorySections({ service }: { service: Service }) {
+  const whatWeBuild = asStringArray(service.whatWeBuild);
+
   return (
     <div className="mt-6 grid gap-6 sm:grid-cols-3">
       <div>
@@ -11,7 +14,7 @@ function CategorySections({ category }: { category: ServiceCategory }) {
           The problem
         </Text>
         <Text size="sm" muted className="mt-2">
-          {category.problem}
+          {service.problem}
         </Text>
       </div>
       <div>
@@ -19,7 +22,7 @@ function CategorySections({ category }: { category: ServiceCategory }) {
           What we build
         </Text>
         <ul className="mt-2 flex flex-col gap-1.5">
-          {category.whatWeBuild.map((item) => (
+          {whatWeBuild.map((item) => (
             <li key={item} className="flex items-start gap-2 text-sm text-ink-muted">
               <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent" aria-hidden="true" />
               {item}
@@ -32,16 +35,16 @@ function CategorySections({ category }: { category: ServiceCategory }) {
           Why it matters
         </Text>
         <Text size="sm" muted className="mt-2">
-          {category.whyItMatters}
+          {service.whyItMatters}
         </Text>
       </div>
     </div>
   );
 }
 
-export function ServiceCategories({ categories }: { categories: ServiceCategory[] }) {
-  const featured = categories.find((category) => category.featured);
-  const rest = categories.filter((category) => !category.featured);
+export function ServiceCategories({ services }: { services: Service[] }) {
+  const featured = services.find((service) => service.featured);
+  const rest = services.filter((service) => !service.featured);
 
   return (
     <div className="flex flex-col gap-6">
@@ -50,23 +53,23 @@ export function ServiceCategories({ categories }: { categories: ServiceCategory[
           <Heading as="h2" size="h3">
             {featured.title}
           </Heading>
-          <CategorySections category={featured} />
+          <CategorySections service={featured} />
         </div>
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {rest.map((category, index) => (
+        {rest.map((service, index) => (
           <div
-            key={category.title}
+            key={service.slug}
             className={cn(
               "rounded-xl border border-edge bg-surface p-8",
               index === rest.length - 1 && rest.length % 2 !== 0 && "lg:col-span-2",
             )}
           >
             <Heading as="h2" size="h3">
-              {category.title}
+              {service.title}
             </Heading>
-            <CategorySections category={category} />
+            <CategorySections service={service} />
           </div>
         ))}
       </div>

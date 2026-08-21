@@ -1,36 +1,37 @@
 import { pageMetadata } from "@/lib/metadata";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
-import { Text } from "@/components/ui/Text";
 import { PageHero } from "@/components/sections/PageHero";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { CaseStudyCard } from "@/components/work/CaseStudyCard";
-import { caseStudies } from "@/lib/data/case-studies";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = pageMetadata({
   title: "Work",
   description:
-    "Real projects Aveniq has built — starting with Siraj Din Electronics, a digital commerce and installment-management platform.",
+    "Projects Aveniq has built and designed — from a verified installment-commerce platform to illustrative concepts across a range of industries.",
   path: "/work",
 });
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const projects = await prisma.project.findMany({
+    where: { published: true },
+    orderBy: [{ featured: "desc" }, { order: "asc" }],
+  });
+
   return (
     <>
       <PageHero
         eyebrow="Work"
         title="Work built around real business problems."
-        description="Every project shown here is presented based on what was actually built — not a mockup, not a concept. As more projects are completed, they'll be added here."
+        description="Verified projects are labeled as such. Everything else is an illustrative concept showing the kind of system Aveniq designs — clearly marked, never presented as a delivered client engagement."
       />
 
       <Section>
         <Container className="flex flex-col gap-8">
-          {caseStudies.map((caseStudy) => (
-            <CaseStudyCard key={caseStudy.slug} caseStudy={caseStudy} />
+          {projects.map((project) => (
+            <CaseStudyCard key={project.slug} project={project} />
           ))}
-          <Text size="sm" muted className="text-center">
-            More case studies will be added here as projects are completed.
-          </Text>
         </Container>
       </Section>
 

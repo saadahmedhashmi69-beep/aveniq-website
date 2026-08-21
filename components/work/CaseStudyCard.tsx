@@ -1,30 +1,32 @@
+import type { Project } from "@prisma/client";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
-import type { CaseStudy } from "@/types";
+import { ProjectStatusBadge } from "@/components/work/ProjectStatusBadge";
+import { asStringArray } from "@/lib/data/project-helpers";
 
-/**
- * The rich preview used on /work — the index is designed to hold exactly
- * one entry without looking empty, and to scale cleanly once real
- * additional case studies exist (see lib/data/case-studies.ts).
- */
-export function CaseStudyCard({ caseStudy }: { caseStudy: CaseStudy }) {
+export function CaseStudyCard({ project }: { project: Project }) {
+  const keyFeatures = asStringArray(project.keyFeatures);
+
   return (
     <div className="rounded-xl border border-edge bg-surface p-8 md:p-10">
-      <Badge>{caseStudy.industry}</Badge>
+      <div className="flex flex-wrap items-center gap-3">
+        <Badge>{project.industry}</Badge>
+        <ProjectStatusBadge status={project.status} />
+      </div>
       <Heading as="h2" size="h2" className="mt-5">
-        {caseStudy.client}
+        {project.projectName}
       </Heading>
       <Text size="base" muted className="mt-2 font-medium text-ink-muted">
-        {caseStudy.projectType}
+        {project.companyName} — {project.type}
       </Text>
       <Text size="base" muted className="mt-4 max-w-2xl">
-        {caseStudy.summary}
+        {project.summary}
       </Text>
 
       <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2">
-        {caseStudy.customerFeatures.slice(0, 4).map((feature) => (
+        {keyFeatures.slice(0, 4).map((feature) => (
           <li key={feature} className="flex items-start gap-3 text-sm text-ink-muted">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
             {feature}
@@ -33,8 +35,8 @@ export function CaseStudyCard({ caseStudy }: { caseStudy: CaseStudy }) {
       </ul>
 
       <div className="mt-8">
-        <Button href={`/work/${caseStudy.slug}`} variant="primary">
-          View case study
+        <Button href={`/work/${project.slug}`} variant="primary">
+          View project
         </Button>
       </div>
     </div>

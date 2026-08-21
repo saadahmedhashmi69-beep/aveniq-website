@@ -16,31 +16,6 @@ export interface ProcessStage {
   deliverables: string[];
 }
 
-/**
- * An illustrative-only calculation used to explain a case study's
- * installment concept. Never populated with real customer data.
- */
-export interface InstallmentExample {
-  cashPrice: number;
-  downPayment: number;
-  durationMonths: number;
-}
-
-export interface CaseStudy {
-  slug: string;
-  client: string;
-  industry: string;
-  projectType: string;
-  summary: string;
-  challenge: string[];
-  customerFeatures: string[];
-  adminFeatures: string[];
-  installmentExample?: InstallmentExample;
-  technologyNote: string;
-  outcomes: string[];
-  screenshotsAvailable: boolean;
-}
-
 /** One layer in the Interactive Architecture Demo. Purely illustrative. */
 export interface ArchitectureLayer {
   id: string;
@@ -65,14 +40,6 @@ export interface CrmLead {
   exampleValue: number;
   stage: CrmStage;
   tasks: CrmTask[];
-}
-
-export interface ServiceCategory {
-  title: string;
-  problem: string;
-  whatWeBuild: string[];
-  whyItMatters: string;
-  featured?: boolean;
 }
 
 export interface Value {
