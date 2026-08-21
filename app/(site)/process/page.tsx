@@ -8,6 +8,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { ProcessSteps } from "@/components/process/ProcessSteps";
 import { securityPractices } from "@/lib/data/process";
+import { getProcessHero } from "@/lib/content";
 
 export const metadata = pageMetadata({
   title: "Process",
@@ -16,14 +17,12 @@ export const metadata = pageMetadata({
   path: "/process",
 });
 
-export default function ProcessPage() {
+export default async function ProcessPage() {
+  const hero = await getProcessHero();
+
   return (
     <>
-      <PageHero
-        eyebrow="Process"
-        title="What working with Aveniq actually looks like."
-        description="A clear, six-stage process — start to finish. Scope, timeline, and cost depend on the actual project; nothing here is a fixed guarantee."
-      />
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} description={hero.description} />
 
       <Section>
         <Container>

@@ -7,8 +7,11 @@ import { TechnologySecurity } from "@/components/sections/TechnologySecurity";
 import { Hero } from "@/components/hero/Hero";
 import { ArchitectureDemo } from "@/components/demos/architecture/ArchitectureDemo";
 import { CrmDemo } from "@/components/demos/crm/CrmDemo";
+import { getHomepageFinalCta } from "@/lib/content";
 
-export default function Home() {
+export default async function Home() {
+  const finalCta = await getHomepageFinalCta();
+
   return (
     <>
       <Hero />
@@ -19,7 +22,11 @@ export default function Home() {
       <TechnologySecurity />
       <ArchitectureDemo />
       <CrmDemo />
-      <FinalCta title="Have a business problem worth engineering a system for?" />
+      <FinalCta
+        title={finalCta.title}
+        secondaryLabel={finalCta.secondaryLabel}
+        secondaryHref={finalCta.secondaryHref}
+      />
     </>
   );
 }
