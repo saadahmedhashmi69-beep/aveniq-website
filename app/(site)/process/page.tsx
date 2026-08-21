@@ -1,4 +1,5 @@
-import { pageMetadata } from "@/lib/metadata";
+import type { Metadata } from "next";
+import { pageMetadataWithOverride } from "@/lib/metadata";
 import { Badge } from "@/components/ui/Badge";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
@@ -10,12 +11,14 @@ import { ProcessSteps } from "@/components/process/ProcessSteps";
 import { securityPractices } from "@/lib/data/process";
 import { getProcessHero } from "@/lib/content";
 
-export const metadata = pageMetadata({
-  title: "Process",
-  description:
-    "How working with Aveniq actually works — a six-stage process from discovery to launch, and the engineering practices behind it.",
-  path: "/process",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadataWithOverride({
+    title: "Process",
+    description:
+      "How working with Aveniq actually works — a six-stage process from discovery to launch, and the engineering practices behind it.",
+    path: "/process",
+  });
+}
 
 export default async function ProcessPage() {
   const hero = await getProcessHero();

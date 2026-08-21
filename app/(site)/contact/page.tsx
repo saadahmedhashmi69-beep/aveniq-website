@@ -1,15 +1,18 @@
-import { pageMetadata } from "@/lib/metadata";
+import type { Metadata } from "next";
+import { pageMetadataWithOverride } from "@/lib/metadata";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { TextLink } from "@/components/ui/TextLink";
 import { PageHero } from "@/components/sections/PageHero";
 import { ContactForm } from "@/components/contact/ContactForm";
 
-export const metadata = pageMetadata({
-  title: "Contact",
-  description: "Start a conversation with Aveniq about a business system you need built.",
-  path: "/contact",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadataWithOverride({
+    title: "Contact",
+    description: "Start a conversation with Aveniq about a business system you need built.",
+    path: "/contact",
+  });
+}
 
 export default function ContactPage() {
   return (

@@ -42,7 +42,7 @@ export function ProjectForm({
               id="slug"
               name="slug"
               required
-              pattern="[-a-z0-9]+"
+              pattern="[a-z0-9\-]+"
               defaultValue={project?.slug}
               placeholder="e.g. concept-example-project"
             />

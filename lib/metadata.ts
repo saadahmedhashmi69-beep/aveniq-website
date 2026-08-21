@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
 import { siteName, siteUrl } from "@/lib/site";
 
 /**
@@ -11,12 +12,14 @@ export function pageMetadata({
   title,
   description,
   path,
+  ogImageUrl,
 }: {
   title: string;
   description: string;
   path: string;
+  ogImageUrl?: string;
 }): Metadata {
-  const ogImage = `${siteUrl}/og?title=${encodeURIComponent(title)}`;
+  const ogImage = ogImageUrl || `${siteUrl}/og?title=${encodeURIComponent(title)}`;
   const fullTitle = `${title} | ${siteName}`;
 
   return {
@@ -38,4 +41,28 @@ export function pageMetadata({
       images: [ogImage],
     },
   };
+}
+
+/**
+ * Like pageMetadata, but checks for an admin-configured SEOSetting
+ * override for this path first (see app/admin/(dashboard)/seo). Falls
+ * back to the given defaults for any field the admin hasn't overridden.
+ */
+export async function pageMetadataWithOverride({
+  title,
+  description,
+  path,
+}: {
+  title: string;
+  description: string;
+  path: string;
+}): Promise<Metadata> {
+  const override = await prisma.sEOSetting.findUnique({ where: { path } }).catch(() => null);
+
+  return pageMetadata({
+    title: override?.title || title,
+    description: override?.description || description,
+    path,
+    ogImageUrl: override?.ogImage || undefined,
+  });
 }

@@ -1,4 +1,5 @@
-import { pageMetadata } from "@/lib/metadata";
+import type { Metadata } from "next";
+import { pageMetadataWithOverride } from "@/lib/metadata";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/sections/PageHero";
@@ -6,12 +7,14 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { CaseStudyCard } from "@/components/work/CaseStudyCard";
 import { prisma } from "@/lib/prisma";
 
-export const metadata = pageMetadata({
-  title: "Work",
-  description:
-    "Projects Aveniq has built and designed — from a verified installment-commerce platform to illustrative concepts across a range of industries.",
-  path: "/work",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadataWithOverride({
+    title: "Work",
+    description:
+      "Projects Aveniq has built and designed — from a verified installment-commerce platform to illustrative concepts across a range of industries.",
+    path: "/work",
+  });
+}
 
 export default async function WorkPage() {
   const projects = await prisma.project.findMany({
