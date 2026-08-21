@@ -1,5 +1,9 @@
-import type { ElementType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+
+// A closed union rather than the generic ElementType — see the same
+// note in components/ui/Container.tsx.
+type SectionTag = "section" | "div" | "article";
 
 export function Section({
   as: Tag = "section",
@@ -7,7 +11,7 @@ export function Section({
   className,
   children,
 }: {
-  as?: ElementType;
+  as?: SectionTag;
   id?: string;
   className?: string;
   children: ReactNode;

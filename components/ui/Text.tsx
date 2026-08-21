@@ -1,7 +1,11 @@
-import type { ElementType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type Size = "lg" | "base" | "sm" | "xs";
+
+// A closed union rather than the generic ElementType — see the same
+// note in components/ui/Container.tsx.
+type TextTag = "p" | "span" | "dt" | "dd" | "label" | "figcaption";
 
 const sizeClasses: Record<Size, string> = {
   lg: "text-lg sm:text-xl leading-relaxed",
@@ -17,7 +21,7 @@ export function Text({
   className,
   children,
 }: {
-  as?: ElementType;
+  as?: TextTag;
   size?: Size;
   muted?: boolean;
   className?: string;

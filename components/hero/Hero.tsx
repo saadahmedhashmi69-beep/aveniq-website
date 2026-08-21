@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
-import { HeroVisual } from "@/components/hero/HeroVisual";
+import { HeroVisualDynamic } from "@/components/hero/HeroVisualDynamic";
 import { getHeroContent } from "@/lib/content";
 
 export async function Hero() {
@@ -29,7 +29,7 @@ export async function Hero() {
         </div>
 
         <div className="mx-auto aspect-[5/4] w-full max-w-md lg:max-w-none">
-          <HeroVisual />
+          <HeroVisualDynamic />
         </div>
       </Container>
     </section>
