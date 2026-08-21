@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Section } from "@/components/ui/Section";
 import { Text } from "@/components/ui/Text";
+import { Reveal } from "@/components/motion/Reveal";
 import { securityPractices } from "@/lib/data/process";
 import { technologies } from "@/lib/data/technology";
 
@@ -10,7 +11,7 @@ export function TechnologySecurity() {
   return (
     <Section className="border-t border-edge bg-surface/40">
       <Container className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-        <div>
+        <Reveal>
           <Badge>What we build with</Badge>
           <Heading as="h2" size="h3" className="mt-4">
             Modern, verifiable technology.
@@ -28,9 +29,9 @@ export function TechnologySecurity() {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
 
-        <div>
+        <Reveal delay={0.1}>
           <Badge>Engineering discipline</Badge>
           <Heading as="h2" size="h3" className="mt-4">
             Built with security in mind.
@@ -46,7 +47,7 @@ export function TechnologySecurity() {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
       </Container>
     </Section>
   );

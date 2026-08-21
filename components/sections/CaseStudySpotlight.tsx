@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Section } from "@/components/ui/Section";
 import { Text } from "@/components/ui/Text";
+import { Reveal } from "@/components/motion/Reveal";
 import { asStringArray } from "@/lib/data/project-helpers";
 import { prisma } from "@/lib/prisma";
 
@@ -27,7 +28,7 @@ export async function CaseStudySpotlight() {
   return (
     <Section className="border-b border-edge bg-surface/40">
       <Container>
-        <div className="max-w-2xl">
+        <Reveal className="max-w-2xl">
           <Badge>Real work</Badge>
           <Heading as="h2" className="mt-4">
             Proof, not promises.
@@ -36,9 +37,9 @@ export async function CaseStudySpotlight() {
             We&apos;d rather show you something we&apos;ve actually built than describe it in bigger
             words. Here&apos;s a system currently in use.
           </Text>
-        </div>
+        </Reveal>
 
-        <div className="mt-10 rounded-xl border border-edge bg-surface p-8 md:p-10">
+        <Reveal delay={0.1} className="mt-10 rounded-xl border border-edge bg-surface p-8 md:p-10">
           <Badge>{project.industry}</Badge>
           <Heading as="h3" size="h2" className="mt-5">
             {project.companyName}
@@ -92,7 +93,7 @@ export async function CaseStudySpotlight() {
               ))}
             </ul>
           </div>
-        </div>
+        </Reveal>
       </Container>
     </Section>
   );

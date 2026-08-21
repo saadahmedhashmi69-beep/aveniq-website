@@ -5,6 +5,7 @@ import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/sections/PageHero";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { CaseStudyCard } from "@/components/work/CaseStudyCard";
+import { Reveal } from "@/components/motion/Reveal";
 import { prisma } from "@/lib/prisma";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,7 +34,9 @@ export default async function WorkPage() {
       <Section>
         <Container className="flex flex-col gap-8">
           {projects.map((project) => (
-            <CaseStudyCard key={project.slug} project={project} />
+            <Reveal key={project.slug}>
+              <CaseStudyCard project={project} />
+            </Reveal>
           ))}
         </Container>
       </Section>

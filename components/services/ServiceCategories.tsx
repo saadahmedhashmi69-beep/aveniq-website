@@ -1,6 +1,8 @@
 import type { Service } from "@prisma/client";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
+import { StaggerGroup } from "@/components/motion/StaggerGroup";
+import { StaggerItem } from "@/components/motion/StaggerItem";
 import { asStringArray } from "@/lib/data/project-helpers";
 import { cn } from "@/lib/utils";
 
@@ -47,19 +49,19 @@ export function ServiceCategories({ services }: { services: Service[] }) {
   const rest = services.filter((service) => !service.featured);
 
   return (
-    <div className="flex flex-col gap-6">
+    <StaggerGroup className="flex flex-col gap-6">
       {featured ? (
-        <div className="rounded-xl border border-accent/50 bg-surface p-8 shadow-[0_0_0_1px_rgba(0,229,255,0.08),0_24px_48px_-24px_rgba(0,229,255,0.25)] md:p-10">
+        <StaggerItem className="rounded-xl border border-accent/50 bg-surface p-8 shadow-[0_0_0_1px_rgba(0,229,255,0.08),0_24px_48px_-24px_rgba(0,229,255,0.25)] md:p-10">
           <Heading as="h2" size="h3">
             {featured.title}
           </Heading>
           <CategorySections service={featured} />
-        </div>
+        </StaggerItem>
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {rest.map((service, index) => (
-          <div
+          <StaggerItem
             key={service.slug}
             className={cn(
               "rounded-xl border border-edge bg-surface p-8",
@@ -70,9 +72,9 @@ export function ServiceCategories({ services }: { services: Service[] }) {
               {service.title}
             </Heading>
             <CategorySections service={service} />
-          </div>
+          </StaggerItem>
         ))}
       </div>
-    </div>
+    </StaggerGroup>
   );
 }

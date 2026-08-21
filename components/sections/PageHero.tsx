@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
+import { Reveal } from "@/components/motion/Reveal";
 
 /**
  * Shared page-hero pattern reused across the Phase 4 secondary pages so
@@ -23,7 +24,7 @@ export function PageHero({
   return (
     <section className="border-b border-edge">
       <Container className="py-16 md:py-24">
-        <div className="max-w-3xl">
+        <Reveal className="max-w-3xl">
           <Badge>{eyebrow}</Badge>
           <Heading as="h1" size="h1" className="mt-4">
             {title}
@@ -31,7 +32,7 @@ export function PageHero({
           <Text size="lg" muted className="mt-5 max-w-2xl">
             {description}
           </Text>
-        </div>
+        </Reveal>
         {children}
       </Container>
     </section>

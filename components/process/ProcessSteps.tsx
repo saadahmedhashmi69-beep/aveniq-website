@@ -1,4 +1,6 @@
 import { Text } from "@/components/ui/Text";
+import { StaggerGroup } from "@/components/motion/StaggerGroup";
+import { StaggerItem } from "@/components/motion/StaggerItem";
 import { processStages } from "@/lib/data/process";
 
 /**
@@ -8,9 +10,9 @@ import { processStages } from "@/lib/data/process";
  */
 export function ProcessSteps() {
   return (
-    <ol className="flex flex-col divide-y divide-edge border-y border-edge">
+    <StaggerGroup as="ol" className="flex flex-col divide-y divide-edge border-y border-edge">
       {processStages.map((stage) => (
-        <li key={stage.number} className="flex flex-col gap-4 py-8 sm:flex-row sm:gap-10">
+        <StaggerItem key={stage.number} as="li" className="flex flex-col gap-4 py-8 sm:flex-row sm:gap-10">
           <span className="font-mono text-sm text-accent sm:w-14 sm:shrink-0" aria-hidden="true">
             {stage.number}
           </span>
@@ -30,8 +32,8 @@ export function ProcessSteps() {
               ))}
             </ul>
           </div>
-        </li>
+        </StaggerItem>
       ))}
-    </ol>
+    </StaggerGroup>
   );
 }

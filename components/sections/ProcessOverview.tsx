@@ -3,6 +3,9 @@ import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Section } from "@/components/ui/Section";
 import { Text } from "@/components/ui/Text";
+import { Reveal } from "@/components/motion/Reveal";
+import { StaggerGroup } from "@/components/motion/StaggerGroup";
+import { StaggerItem } from "@/components/motion/StaggerItem";
 import { processStages } from "@/lib/data/process";
 
 /**
@@ -14,7 +17,7 @@ export function ProcessOverview() {
   return (
     <Section>
       <Container>
-        <div className="max-w-2xl">
+        <Reveal className="max-w-2xl">
           <Badge>How we work</Badge>
           <Heading as="h2" className="mt-4">
             A clear process, start to finish.
@@ -23,11 +26,15 @@ export function ProcessOverview() {
             Every project moves through the same six stages, in order — so you always know what
             happens next.
           </Text>
-        </div>
+        </Reveal>
 
-        <ol className="mt-10 flex flex-col divide-y divide-edge border-y border-edge">
+        <StaggerGroup as="ol" className="mt-10 flex flex-col divide-y divide-edge border-y border-edge">
           {processStages.map((stage) => (
-            <li key={stage.number} className="flex flex-col gap-2 py-6 sm:flex-row sm:items-baseline sm:gap-8">
+            <StaggerItem
+              key={stage.number}
+              as="li"
+              className="flex flex-col gap-2 py-6 sm:flex-row sm:items-baseline sm:gap-8"
+            >
               <span className="font-mono text-sm text-accent sm:w-12 sm:shrink-0" aria-hidden="true">
                 {stage.number}
               </span>
@@ -37,9 +44,9 @@ export function ProcessOverview() {
                   {stage.summary}
                 </Text>
               </div>
-            </li>
+            </StaggerItem>
           ))}
-        </ol>
+        </StaggerGroup>
       </Container>
     </Section>
   );

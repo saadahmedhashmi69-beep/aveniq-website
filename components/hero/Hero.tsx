@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { HeroVisualDynamic } from "@/components/hero/HeroVisualDynamic";
+import { Reveal } from "@/components/motion/Reveal";
 import { getHeroContent } from "@/lib/content";
 
 export async function Hero() {
@@ -11,7 +12,7 @@ export async function Hero() {
   return (
     <section className="border-b border-edge">
       <Container className="grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[1.1fr_1fr] lg:gap-16 xl:py-28">
-        <div>
+        <Reveal>
           <Heading as="h1" size="display">
             {content.headline}
           </Heading>
@@ -26,7 +27,7 @@ export async function Hero() {
               {content.secondaryCtaLabel}
             </Button>
           </div>
-        </div>
+        </Reveal>
 
         <div className="mx-auto aspect-[5/4] w-full max-w-md lg:max-w-none">
           <HeroVisualDynamic />

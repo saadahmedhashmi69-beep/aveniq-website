@@ -3,6 +3,9 @@ import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Section } from "@/components/ui/Section";
 import { Text } from "@/components/ui/Text";
+import { Reveal } from "@/components/motion/Reveal";
+import { StaggerGroup } from "@/components/motion/StaggerGroup";
+import { StaggerItem } from "@/components/motion/StaggerItem";
 import { capabilities } from "@/lib/data/capabilities";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +16,7 @@ export function Capabilities() {
   return (
     <Section>
       <Container>
-        <div className="max-w-2xl">
+        <Reveal className="max-w-2xl">
           <Badge>What we build</Badge>
           <Heading as="h2" className="mt-4">
             We don&apos;t just build pages. We build systems.
@@ -22,11 +25,11 @@ export function Capabilities() {
             Every project starts with the same question: what does your business actually need to
             run better? The answer shapes what we build.
           </Text>
-        </div>
+        </Reveal>
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+        <StaggerGroup className="mt-12 grid gap-6 lg:grid-cols-3">
           {featured ? (
-            <div className="flex flex-col rounded-xl border border-accent/50 bg-surface p-8 shadow-[0_0_0_1px_rgba(0,229,255,0.08),0_24px_48px_-24px_rgba(0,229,255,0.25)] lg:col-span-1 lg:row-span-2">
+            <StaggerItem className="flex flex-col rounded-xl border border-accent/50 bg-surface p-8 shadow-[0_0_0_1px_rgba(0,229,255,0.08),0_24px_48px_-24px_rgba(0,229,255,0.25)] lg:col-span-1 lg:row-span-2">
               <Heading as="h3" className="text-ink">
                 {featured.title}
               </Heading>
@@ -36,12 +39,12 @@ export function Capabilities() {
               <Text size="sm" muted className="mt-auto border-t border-edge pt-6 lg:mt-16">
                 This is where most engagements start.
               </Text>
-            </div>
+            </StaggerItem>
           ) : null}
 
           <div className="grid gap-6 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-2">
             {rest.map((item, index) => (
-              <div
+              <StaggerItem
                 key={item.title}
                 className={cn(
                   "rounded-lg border border-edge bg-surface p-6 transition-colors duration-150 ease-out motion-reduce:transition-none hover:border-edge-strong",
@@ -52,10 +55,10 @@ export function Capabilities() {
                 <Text size="sm" muted className="mt-2">
                   {item.description}
                 </Text>
-              </div>
+              </StaggerItem>
             ))}
           </div>
-        </div>
+        </StaggerGroup>
       </Container>
     </Section>
   );
