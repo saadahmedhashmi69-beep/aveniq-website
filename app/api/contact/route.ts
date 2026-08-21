@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateContactPayload, type ContactFieldName } from "@/lib/contact-validation";
+import { getClientIp, isRateLimited } from "@/lib/rate-limit";
 
 /**
  * Contact form submission endpoint.
@@ -26,24 +27,6 @@ const MIN_FILL_TIME_MS = 2500;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
 
-const submissionsByIp = new Map<string, number[]>();
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = (submissionsByIp.get(ip) ?? []).filter(
-    (t) => now - t < RATE_LIMIT_WINDOW_MS,
-  );
-  timestamps.push(now);
-  submissionsByIp.set(ip, timestamps);
-  return timestamps.length > RATE_LIMIT_MAX;
-}
-
-function getClientIp(request: Request): string {
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  if (forwardedFor) return forwardedFor.split(",")[0].trim();
-  return request.headers.get("x-real-ip") ?? "unknown";
-}
-
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -53,7 +36,7 @@ export async function POST(request: Request) {
   }
 
   const ip = getClientIp(request);
-  if (isRateLimited(ip)) {
+  if (isRateLimited(`contact:${ip}`, RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX)) {
     return NextResponse.json(
       { ok: false, error: "Too many submissions. Please try again later." },
       { status: 429 },
