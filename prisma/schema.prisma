@@ -1,0 +1,262 @@
+// Aveniq — Prisma schema
+// Postgres-backed persistence for the admin CMS, authentication, and inquiry pipeline.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Auth
+// ---------------------------------------------------------------------------
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+
+  sessions      Session[]
+  inquiryNotes  InquiryNote[]
+  activityLogs  ActivityLog[]
+}
+
+// Session tokens are stored hashed (SHA-256) — the raw token only ever exists
+// in the httpOnly cookie on the client and briefly in memory on the server.
+model Session {
+  id          String   @id @default(cuid())
+  tokenHash   String   @unique
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  ipAddress   String?
+  userAgent   String?
+
+  @@index([adminUserId])
+}
+
+// ---------------------------------------------------------------------------
+// Inquiries (contact form + estimator submissions)
+// ---------------------------------------------------------------------------
+
+enum InquirySource {
+  CONTACT
+  ESTIMATOR
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL
+  WON
+  LOST
+  ARCHIVED
+}
+
+model Inquiry {
+  id          String        @id @default(cuid())
+  source      InquirySource
+  status      InquiryStatus @default(NEW)
+
+  name    String
+  email   String
+  company String?
+  phone   String?
+  message String?
+
+  // Estimator-specific structured answers (project type, business type,
+  // problem, user scale, functionality, platform, timeline, budget).
+  estimatorAnswers Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notes InquiryNote[]
+
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
+}
+
+model InquiryNote {
+  id          String   @id @default(cuid())
+  inquiryId   String
+  inquiry     Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  body        String
+  createdById String?
+  createdBy   AdminUser? @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([inquiryId])
+}
+
+// ---------------------------------------------------------------------------
+// Portfolio
+// ---------------------------------------------------------------------------
+
+// Distinguishes real, verifiable client work from illustrative examples.
+// VERIFIED must never be applied to a project without a real, named client
+// and confirmed outcomes. CONCEPT/PROTOTYPE/DEMONSTRATION are all
+// placeholder-company illustrative work and must display that status
+// visibly wherever the project is shown.
+enum ProjectStatus {
+  VERIFIED
+  CONCEPT
+  PROTOTYPE
+  DEMONSTRATION
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  status      ProjectStatus
+
+  companyName String
+  projectName String
+  category    String
+  industry    String
+  type        String
+
+  summary     String
+  overview    String
+  challenge   Json
+  objectives  Json
+  solution    String
+  architecture Json
+
+  keyFeatures         Json
+  customerExperience  Json
+  adminExperience     Json
+  workflows           Json
+  integrations        Json
+  security            Json
+  responsiveExperience String
+  designApproach       String
+
+  technology     Json
+  projectScope   String
+  deliverables   Json
+  timeline       String
+
+  galleryAvailable Boolean @default(false)
+  relatedProjects  Json
+
+  ctaText String?
+
+  published Boolean @default(true)
+  featured  Boolean @default(false)
+  order     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([published])
+}
+
+// ---------------------------------------------------------------------------
+// Services
+// ---------------------------------------------------------------------------
+
+model Service {
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  title         String
+  category      String
+  problem       String
+  whatWeBuild   Json
+  whyItMatters  String
+
+  published Boolean @default(true)
+  featured  Boolean @default(false)
+  order     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Testimonials — real, attributable feedback only. Nothing seeds this table;
+// it stays empty until the project owner supplies genuine client quotes.
+// ---------------------------------------------------------------------------
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  quote       String
+  authorName  String
+  authorTitle String?
+  companyName String?
+  projectId   String?
+
+  // Must be true before a testimonial can display publicly — enforced in
+  // the admin UI, not just in application logic, so nothing unverified
+  // reaches the site by accident.
+  verified  Boolean @default(false)
+  published Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Site content + SEO
+// ---------------------------------------------------------------------------
+
+// Generic key/value content store for CMS-editable copy (homepage hero,
+// CTAs, section intros). Seeded from the existing static copy so nothing
+// changes on the live site until an admin explicitly edits a value.
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model SEOSetting {
+  id          String   @id @default(cuid())
+  path        String   @unique
+  title       String?
+  description String?
+  ogImage     String?
+  updatedAt   DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Media — URL-referenced only. Aveniq does not run a binary upload/storage
+// pipeline; admins paste a hosted image URL (e.g. from an external asset
+// host) rather than uploading files into this application or into Git.
+// ---------------------------------------------------------------------------
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String
+  altText   String
+  kind      String   @default("image")
+  createdAt DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Activity log — audit trail for admin actions.
+// ---------------------------------------------------------------------------
+
+model ActivityLog {
+  id          String    @id @default(cuid())
+  adminUserId String?
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+
+  @@index([adminUserId])
+  @@index([entityType])
+}
